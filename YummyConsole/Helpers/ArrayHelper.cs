@@ -9,9 +9,9 @@ namespace YummyConsole.Helpers
     public static class ArrayHelper
     {
 
-        private static readonly Random randomGen = new Random();
+        private static readonly System.Random randomGen = new System.Random();
 
-        private static void TheShuffler<T>(T[] array, Random randomGen)
+        private static void TheShuffler<T>(T[] array, System.Random randomGen)
         {
             int n = array.Length;
             while (n > 1)
@@ -29,7 +29,7 @@ namespace YummyConsole.Helpers
         /// </summary>
         public static void Shuffle<T>(this T[] array, int seed)
         {
-            TheShuffler(array, new Random(seed));
+            TheShuffler(array, new System.Random(seed));
         }
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace YummyConsole.Helpers
                     if (list[i].Length > maxWidth)
                     {
                         if (list[i].Length != maxWidth + 1)
-                            list.Insert(i + 1, list[i].Substring(maxWidth + 1));
+                            list.Insert(i + 1, list[i].Substring(maxWidth));
                         list[i] = list[i].Substring(0, maxWidth);
                     }
                 }

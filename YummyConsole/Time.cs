@@ -16,7 +16,7 @@ namespace YummyConsole
         private static long lastFrameTime = 0;
         private static bool running = false;
 
-        public delegate void FrameEvent();
+        internal delegate void FrameEvent();
 
         /// <summary>
         /// Get or set the target amount of time between each frame.
@@ -61,7 +61,10 @@ namespace YummyConsole
             running = true;
             stopwatch.Start();
 
-            while (running)
+			// Initialize
+	        Yummy.ValidateFileHandler();
+
+			while (running)
             {
                 long now = stopwatch.ElapsedMilliseconds;
                 long elapedTime = now - lastFrameTime;

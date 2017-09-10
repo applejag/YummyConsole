@@ -12,7 +12,6 @@ namespace YummyConsole
     {
         internal static readonly List<Drawable> all = new List<Drawable>();
         private static readonly List<string> debug = new List<string>();
-        private static readonly object locker = new object();
 
         private bool m_Initiated = false;
         private bool m_Destroyed = false;
@@ -228,53 +227,44 @@ namespace YummyConsole
 
         internal static void FrameCallback()
         {
-            lock (locker)
+            lock (all)
             {
-                // Fix size
-                if (Yummy.FixedSize == false)
+
+				// Update
+				Input.AnalyzeInput();
+                for (int i = all.Count - 1; i >= 0; i--)
                 {
-                    if (Console.WindowWidth != Yummy.BufferWidth || Console.WindowHeight != Yummy.BufferHeight)
-                        Yummy.SetWindowSize(Console.WindowWidth, Yummy.BufferHeight);
+                    // GC & Update each one
+                    Drawable drawable = all[i];
+                    if (drawable?.Destroyed ?? true)
+                        all.RemoveAt(i);
+                    else if (drawable.Enabled)
+                        drawable.Update();
                 }
 
-                lock (all)
-                {
-                    // Update
-                    Input.AnalyzeInput();
-                    for (int i = all.Count - 1; i >= 0; i--)
-                    {
-                        // GC & Update each one
-                        Drawable drawable = all[i];
-                        if (drawable?.Destroyed ?? true)
-                            all.RemoveAt(i);
-                        else if (drawable.Enabled)
-                            drawable.Update();
-                    }
+                // Draw
+                Yummy.ResetColor();
+                Yummy.Clear();
 
-                    // Draw
-                    Yummy.ResetColor();
-                    Yummy.Clear();
-
-                    all.Sort((a, b) => b.ZDepth.CompareTo(a.ZDepth));
-                    foreach (Drawable drawable in all)
-                        if (drawable?.Enabled ?? false)
-                            drawable.Draw();
+                all.Sort((a, b) => b.ZDepth.CompareTo(a.ZDepth));
+                foreach (Drawable drawable in all)
+                    if (drawable?.Enabled ?? false)
+                        drawable.Draw();
 
 #if DEBUG
-                    // Debug text
-                    Yummy.BackgroundColor = null;
-                    Yummy.ForegroundColor = Color.GREEN;
-                    int debugLength = debug.Count;
-                    for (int i = 0; i < debugLength; i++)
-                    {
-                        Yummy.SetCursorPosition(0, Yummy.BufferHeight - debugLength + i);
-                        Yummy.Write("<DEBUG> " + debug[i]);
-                    }
-                    debug.Clear();
+                // Debug text
+                Yummy.BackgroundColor = null;
+                Yummy.ForegroundColor = Color.GREEN;
+                int debugLength = debug.Count;
+                for (int i = 0; i < debugLength; i++)
+                {
+                    Yummy.SetCursorPosition(0, Yummy.BufferHeight - debugLength + i);
+                    Yummy.Write("<DEBUG> " + debug[i]);
+                }
+                debug.Clear();
 #endif
 
-                    Yummy.Render();
-                }
+                Yummy.Render();
             }
         }
     }

@@ -7,13 +7,15 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.SqlServer.Server;
+using YummyConsole.External;
 
 namespace YummyConsole
 {
     public static class Yummy
     {
         #region Constants
-        private const string ERR_NOT_INITIALIZED = "The drawing library has not yet been initialized! Please refer to the " + nameof(SetWindowSize) + " function";
+        private const string ERR_NOT_INITIALIZED = "The drawing library has not yet been initialized! Please refer to the " + nameof(SetBufferSize) + " function";
         #endregion
 
         #region Private fields
@@ -44,14 +46,14 @@ namespace YummyConsole
         public static int BufferHeight => bufferHeight;
 
         /// <summary>
-        /// Gets or sets the cursors current visible state. Default is true
+        /// Gets or sets the cursors current visible state. Default: false
         /// </summary>
-        public static bool CursorVisible { get; set; } = true;
+        public static bool CursorVisible { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the setting wether or not the renderer shall force the windows size to be the same as the buffer size.
+        /// If true the buffer takes on the size of the console window. If false, it forces the window to be the size of the buffer. Default: true
         /// </summary>
-        public static bool FixedSize { get; set; } = false;
+        public static bool AdaptableSize { get; set; } = true;
 
         /// <summary>
         /// Get or sets the current cursor position on the x-axis
@@ -95,11 +97,8 @@ namespace YummyConsole
         /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/></para>
         /// </summary>
         /// <param name="text">The string of text to be written.</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void WriteWrap(string text)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
             int length = text.Length;
 
             for (int i = 0; i < length; i++)
@@ -122,11 +121,10 @@ namespace YummyConsole
 
         /// <summary>
         /// Writes a formatted string of text at the curren cursor position, using the assigned color attribute.
-        /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/>, <seealso cref="string.Format"/></para>
+        /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/>, <seealso cref="Format"/></para>
         /// </summary>
         /// <param name="format">The string format to be used.</param>
         /// <param name="args">The list of arguments for the string formatting</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void Write(string format, params object[] args)
         {
             Write(string.Format(format, args));
@@ -137,11 +135,8 @@ namespace YummyConsole
         /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/></para>
         /// </summary>
         /// <param name="text">The string of text to be written.</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void Write(string text)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
             int length = text.Length;
             for (int i = 0; i < length; i++)
             {
@@ -160,11 +155,8 @@ namespace YummyConsole
         /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/></para>
         /// </summary>
         /// <param name="letter">The ASCII/Unicode character to be written.</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void Write(char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-            
             if (CursorOnScreen)
             {
                 int index = CursorY * bufferWidth + CursorX;
@@ -177,11 +169,10 @@ namespace YummyConsole
         /// <summary>
         /// Writes a formatted string of text at the curren cursor position, using the assigned color attribute.
         /// Once at the end of the buffer width the cursor jumps to a new line, similar to <see cref="WriteWrap"/>.
-        /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/>, <seealso cref="string.Format"/></para>
+        /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/>, <seealso cref="Format"/></para>
         /// </summary>
         /// <param name="format">The string format to be used.</param>
         /// <param name="args">The list of arguments for the string formatting</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void WriteLine(string format, params object[] args)
         {
             WriteLine(string.Format(format, args));
@@ -193,26 +184,20 @@ namespace YummyConsole
         /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/></para>
         /// </summary>
         /// <param name="text">The string of text to be written.</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void WriteLine(string text)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
             WriteWrap(text);
             CursorY++;
             CursorX = 0;
         }
 
-        /// <summary>
-        /// Clears the entire drawing buffer.
-        /// <para>See also: <seealso cref="BackgroundColor"/>
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
-        public static void Clear()
+		/// <summary>
+		/// Clears the entire drawing buffer.
+		/// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/></para>
+		/// </summary>
+		public static void Clear()
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
-            SetCursorPosition(0, 0);
+			SetCursorPosition(0, 0);
 
             Fill(' ');
         }
@@ -221,11 +206,8 @@ namespace YummyConsole
         /// Clears the current horizontal line and resets the cursor to the start of the line.
         /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="CursorX"/>, <seealso cref="CursorY"/></para>
         /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void ClearLine()
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-            
             int startAt = CursorY * bufferWidth;
             int stopAt = Math.Min(startAt + bufferWidth, bufferSize);
 
@@ -242,12 +224,9 @@ namespace YummyConsole
         /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/></para>
         /// </summary>
         /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void Fill(char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
-            for (int b = 0; b < bufferSize; b++)
+			for (int b = 0; b < bufferSize; b++)
             {
                 FillBufferPoint(b, letter);
             }
@@ -260,12 +239,9 @@ namespace YummyConsole
         /// </summary>
         /// <param name="rect">The rectangle area to fill in</param>
         /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void FillRect(Rect rect, char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
-            FillRect(rect.x, rect.y, rect.width, rect.height, letter);
+			FillRect(rect.x, rect.y, rect.width, rect.height, letter);
         }
 
         /// <summary>
@@ -278,12 +254,9 @@ namespace YummyConsole
         /// <param name="width">The width of the rectangle</param>
         /// <param name="height">The height of the rectangle</param>
         /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void FillRect(int left, int top, int width, int height, char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
-            int right = left + width;
+			int right = left + width;
             int bottom = top + height;
             for (int x = left; x < right; x++)
             {
@@ -337,12 +310,9 @@ namespace YummyConsole
         /// </summary>
         /// <param name="point">The 2D position of the point</param>
         /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void FillPoint(Point point, char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
-            FillPoint(point.x, point.y, letter);
+			FillPoint(point.x, point.y, letter);
         }
 
         /// <summary>
@@ -353,12 +323,9 @@ namespace YummyConsole
         /// <param name="x">The x component of the point</param>
         /// <param name="y">The y component of the point</param>
         /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void FillPoint(int x, int y, char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
-            if (x < 0 || x >= bufferWidth || y < 0 || y >= bufferHeight)
+			if (x < 0 || x >= bufferWidth || y < 0 || y >= bufferHeight)
                 return;
 
             int index = y * bufferWidth + x;
@@ -368,6 +335,19 @@ namespace YummyConsole
             }
         }
 
+	    /// <summary>
+	    /// Draws a line from one point in a certain direction using the assigned color attribute and the given <paramref name="letter"/>, 
+	    /// marked between (<see cref="Point"/> <paramref name="point"/>) and (<see cref="Point"/> <paramref name="point"/> + <see cref="Point"/> <paramref name="direction"/>).
+	    /// <para>See also: <seealso cref="BackgroundColor"/>, <seealso cref="ForegroundColor"/></para>
+	    /// </summary>
+	    /// <param name="point">The 2D position of the starting point</param>
+	    /// <param name="direction">The 2D direction of the ray</param>
+	    /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
+		public static void FillRay(Point point, Point direction, char letter)
+	    {
+		    FillLine(point, point + direction, letter);
+	    }
+
         /// <summary>
         /// Draws a line between two points using the assigned color attribute and the given <paramref name="letter"/>, 
         /// marked between (<see cref="Point"/> <paramref name="point1"/>) and (<see cref="Point"/> <paramref name="point2"/>).
@@ -376,11 +356,8 @@ namespace YummyConsole
         /// <param name="point1">The 2D position of the first point</param>
         /// <param name="point2">The 2D position of the second point</param>
         /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void FillLine(Point point1, Point point2, char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
             FillLine(point1.x, point1.y, point2.x, point2.y, letter);
         }
 
@@ -394,11 +371,8 @@ namespace YummyConsole
         /// <param name="x2">The x component of the second point</param>
         /// <param name="y2">The y component of the second point</param>
         /// <param name="letter">The ASCII/Unicode character to use while filling in</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void FillLine(int x1, int y1, int x2, int y2, char letter)
         {
-            if (buffer == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
             // Generalized Bresenham's Line Drawing Algorithm
             int x = x1;
             int y = y1;
@@ -435,31 +409,35 @@ namespace YummyConsole
         /// <summary>
         /// Renders the drawing buffer onto the console window.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void Render()
         {
-            if (buffer == null || fileHandler == null) throw new InvalidOperationException(ERR_NOT_INITIALIZED);
-
-            try
-            {
-                if (FixedSize)
-                {
-                    Console.SetWindowSize(bufferWidth, bufferHeight);
-                }
-
-                bufferRect.Width = bufferWidth;
-                bufferRect.Height = bufferHeight;
+			try
+			{
+	            // Fix size
+	            if (AdaptableSize)
+	            {
+					if (Console.WindowWidth != bufferWidth || Console.BufferHeight != bufferHeight)
+						SetBufferSize(Console.WindowWidth, Console.WindowHeight);
+					else if (bufferRect.Width != bufferWidth || bufferRect.Height != bufferHeight)
+			            SetBufferSize(bufferRect.Height, bufferRect.Width);
+	            }
+	            else
+	            {
+		            // Force console size
+		            Console.SetWindowSize(bufferWidth, bufferHeight);
+	            }
 
                 Console.SetBufferSize(
                     Math.Max(Console.WindowWidth, bufferWidth),
                     Math.Max(Console.WindowHeight, bufferHeight));
             } catch { }
-
-            bool b = WriteConsoleOutput(fileHandler, buffer,
+			
+            bool b = Kernel32.WriteConsoleOutput(fileHandler, buffer,
                 new Coord(bufferWidth, bufferHeight),
                 new Coord(0, 0),
                 ref bufferRect);
 
+			// Cursor
             int x = cursorBlinkX;
             int y = cursorBlinkY;
             bool inWindow = x >= 0 && x < bufferWidth && y >= 0 && y < bufferHeight;
@@ -480,10 +458,9 @@ namespace YummyConsole
         /// <summary>
         /// Change the window size of the drawing buffer to equal the <see cref="Console.WindowWidth"/> and <see cref="Console.WindowHeight"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
-        public static void SetWindowSize()
+        public static void SetBufferSize()
         {
-            SetWindowSize(Console.WindowWidth, Console.WindowHeight);
+            SetBufferSize(Console.WindowWidth, Console.WindowHeight);
         }
 
         /// <summary>
@@ -491,47 +468,31 @@ namespace YummyConsole
         /// </summary>
         /// <param name="width">The new <paramref name="width"/> of the buffer</param>
         /// <param name="height">The new <paramref name="height"/> of the buffer</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
-        public static void SetWindowSize(int width, int height)
+        public static void SetBufferSize(int width, int height)
         {
-            fileHandler?.Dispose();
-            fileHandler = CreateFile(@"CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
-
-            short oldWidth = bufferWidth;
-            short oldHeight = bufferHeight;
-            int oldSize = bufferSize;
-            var oldBuffer = buffer;
+			ValidateFileHandler();
 
             bufferWidth = (short)width;
             bufferHeight = (short)height;
             bufferSize = bufferWidth * bufferHeight;
             buffer = CharInfo.NewBuffer(width, height);
-            bufferRect = new SmallRect { Left = 0, Top = 0, Width = bufferWidth, Height = bufferHeight };
-
-            // Copy old buffer
-            if (oldBuffer != null)
-            {
-                if (oldSize > bufferSize) oldSize = bufferSize;
-
-                for (int b = 0; b < oldSize; b++)
-                {
-                    int x = b % bufferWidth;
-                    int y = b / bufferWidth;
-
-                    if (x < oldWidth && y < oldHeight)
-                    {
-                        int i = y * oldWidth + x;
-                        buffer[b] = oldBuffer[i];
-                    }
-                }
-            }
+            bufferRect = new SmallRect { Left = 0, Top = 0, Right = bufferWidth, Bottom = bufferHeight };
         }
+
+	    internal static void ValidateFileHandler()
+	    {
+			if (fileHandler?.IsInvalid ?? true)
+			{
+				fileHandler?.Dispose();
+				fileHandler = Kernel32.CreateFile(@"CONOUT$", 0x40000000, 2, IntPtr.Zero, FileMode.Open, 0, IntPtr.Zero);
+				SetBufferSize(Console.WindowWidth, Console.WindowHeight);
+			}
+		}
 
         /// <summary>
         /// Sets the cursor position on the buffer window.
         /// </summary>
         /// <param name="point">The 2D position</param>
-        /// <exception cref="InvalidOperationException">Thrown if called before <seealso cref="Initialize"/></exception>
         public static void SetCursorPosition(Point point)
         {
             SetCursorPosition(point.x, point.y);
@@ -581,100 +542,5 @@ namespace YummyConsole
         }
         #endregion
 
-        #region External functions
-
-        [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static extern SafeFileHandle CreateFile(
-            string fileName,
-            [MarshalAs(UnmanagedType.U4)] uint fileAccess,
-            [MarshalAs(UnmanagedType.U4)] uint fileShare,
-            IntPtr securityAttributes,
-            [MarshalAs(UnmanagedType.U4)] FileMode creationDisposition,
-            [MarshalAs(UnmanagedType.U4)] int flags,
-            IntPtr template);
-
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        static extern bool WriteConsoleOutput(
-            SafeFileHandle hConsoleOutput,
-            CharInfo[] lpBuffer,
-            Coord dwBufferSize,
-            Coord dwBufferCoord,
-            ref SmallRect lpWriteRegion);
-
-        #endregion
-
-        #region Datastructures
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct Coord
-        {
-            public short X;
-            public short Y;
-
-            public Coord(short X, short Y)
-            {
-                this.X = X;
-                this.Y = Y;
-            }
-        };
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct CharUnion
-        {
-            [FieldOffset(0)] public char UnicodeChar;
-            //[FieldOffset(0)] public byte AsciiChar;
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct CharInfo
-        {
-            private const short DEFAULT_ATTRIBUTE = ((short)Color.DEFAULT_FOREGROUND & 0x0F) | ((short)Color.DEFAULT_BACKGROUND & 0xF0);
-
-            [FieldOffset(0)] public CharUnion Char;
-            [FieldOffset(2)] public short Attributes;
-
-            //public static CharInfo NewAsciiChar(byte ascii, short attributes = DEFAULT_ATTRIBUTE)
-            //{
-            //    var info = new CharInfo();
-            //    info.Char.AsciiChar = ascii;
-            //    info.Attributes = attributes;
-            //    return info;
-            //}
-
-            public static CharInfo NewUnicodeChar(char unicode, short attributes = DEFAULT_ATTRIBUTE)
-            {
-                var info = new CharInfo();
-                info.Char.UnicodeChar = unicode;
-                info.Attributes = attributes;
-                return info;
-            }
-
-            public static CharInfo[] NewBuffer(int width, int height)
-            {
-                int bufferSize = width * height;
-                CharInfo[] buffer = new CharInfo[bufferSize];
-
-                // Fill buffer
-                var defaultChar = NewUnicodeChar(' ');
-
-                for (int b = 0; b < bufferSize; b++)
-                {
-                    buffer[b] = defaultChar;
-                }
-
-                return buffer;
-            }
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct SmallRect
-        {
-            public short Left;
-            public short Top;
-            public short Width;
-            public short Height;
-        }
-
-        #endregion
     }
 }

@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YummyConsole", "YummyConsole\YummyConsole.csproj", "{0014AE8C-C8EC-4D1F-8395-9A18D8C4F3AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example_TicTacToe", "Example_TicTacToe\Example_TicTacToe.csproj", "{77520112-8680-482E-B0C7-46E01DAB8B46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0014AE8C-C8EC-4D1F-8395-9A18D8C4F3AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0014AE8C-C8EC-4D1F-8395-9A18D8C4F3AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0014AE8C-C8EC-4D1F-8395-9A18D8C4F3AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77520112-8680-482E-B0C7-46E01DAB8B46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77520112-8680-482E-B0C7-46E01DAB8B46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77520112-8680-482E-B0C7-46E01DAB8B46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77520112-8680-482E-B0C7-46E01DAB8B46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
