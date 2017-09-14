@@ -5,8 +5,8 @@ namespace Example_TicTacToe
 {
 	public class Square : Text
 	{
-		public const int width = 7;
-		public const int height = 5;
+		public const int WIDTH = 7;
+		public const int HEIGHT = 5;
 		private const string spriteX =
 			"#     #" +
 			" #   # " +
@@ -35,10 +35,12 @@ namespace Example_TicTacToe
 			set => text = GetSprite(_player = value);
 		}
 
-		public Square(Drawable parent = null) : base(parent)
+		public Square(int x, int y, Drawable parent = null) : base(parent)
 		{
-			maxWidth = width;
+			LocalPosition = new Point(x * (WIDTH + 1), y * (HEIGHT + 1));
+			maxWidth = WIDTH;
 			text = GetSprite(_player);
+			ZDepth = 1;
 		}
 
 		protected override void Draw()

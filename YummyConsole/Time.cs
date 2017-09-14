@@ -10,13 +10,11 @@ namespace YummyConsole
 {
     public static class Time
     {
-        private static readonly Stopwatch stopwatch = new Stopwatch();
-        private static float deltaTime = 0;
-        private static long millisecondsPerFrame = 0;
-        private static long lastFrameTime = 0;
-        private static bool running = false;
-
-        internal delegate void FrameEvent();
+        private static readonly Stopwatch _stopwatch = new Stopwatch();
+        private static float _deltaTime = 0;
+        private static long _millisecondsPerFrame = 0;
+        private static long _lastFrameTime = 0;
+        private static bool _running = false;
 
         /// <summary>
         /// Get or set the target amount of time between each frame.
@@ -24,63 +22,79 @@ namespace YummyConsole
         /// </summary>
         public static float FramesPerSecond
         {
-            get => millisecondsPerFrame * 0.001f;
-            set => millisecondsPerFrame = (long) value * 1000;
+            get => _millisecondsPerFrame * 0.001f;
+            set => _millisecondsPerFrame = (long) value * 1000;
         }
 
         /// <summary>
         /// Time elapsed since start of program in seconds.
         /// </summary>
-        public static float Seconds => (float)stopwatch.Elapsed.TotalSeconds;
+        public static float Seconds => (float)_stopwatch.Elapsed.TotalSeconds;
 
         /// <summary>
         /// Time elapsed since start of program in milliseconds.
         /// </summary>
-        public static long Milliseconds => stopwatch.ElapsedMilliseconds;
+        public static long Milliseconds => _stopwatch.ElapsedMilliseconds;
 
         /// <summary>
         /// Time elapsed since last frame in seconds.
         /// </summary>
-        public static float DeltaTime => deltaTime;
+        public static float DeltaTime => _deltaTime;
 
         /// <summary>
         /// Returns true when the frame timer currently running.
         /// <para>See: <see cref="RunFrameTimer"/>, <see cref="StopFrameTimer"/></para>
         /// </summary>
-        public static bool IsRunning => running;
+        public static bool IsRunning => _running;
 
         public static void StopFrameTimer()
         {
-            running = false;
+            _running = false;
         }
 
-        public static void RunFrameTimer()
+        public static async Task RunFrameTimer()
         {
-            if (running) throw new InvalidOperationException("Frame timer is already running!");
+	        await Task.Run(() => {
 
-            running = true;
-            stopwatch.Start();
+				// Initialize
+				_running = true;
+				_stopwatch.Restart();
+		        _lastFrameTime = _stopwatch.ElapsedMilliseconds;
+				Yummy.ValidateFileHandler();
 
-			// Initialize
-	        Yummy.ValidateFileHandler();
-
-			while (running)
-            {
-                long now = stopwatch.ElapsedMilliseconds;
-                long elapedTime = now - lastFrameTime;
+				while (_running)
+				{
+					long now = _stopwatch.ElapsedMilliseconds;
+					long elapedTime = now - _lastFrameTime;
                 
-                if (elapedTime >= millisecondsPerFrame)
-                {
-                    deltaTime = elapedTime * 0.001f;
+					if (elapedTime >= _millisecondsPerFrame)
+					{
+						_deltaTime = elapedTime * 0.001f;
 
-                    Drawable.FrameCallback();
+						Drawable.FrameCallback();
 
-                    lastFrameTime = now;
-                }
-            }
+						_lastFrameTime = now;
+					}
+				}
 
-            stopwatch.Stop();
-        }
+				_stopwatch.Stop();
+	        });
+		}
 
-    }
+	    public static void RunSingleFrame()
+	    {
+		    Yummy.ValidateFileHandler();
+
+			if (!_stopwatch.IsRunning) _stopwatch.Restart();
+
+		    long now = _stopwatch.ElapsedMilliseconds;
+		    long elapedTime = now - _lastFrameTime;
+		    _deltaTime = elapedTime * 0.001f;
+
+		    Drawable.FrameCallback();
+
+			_lastFrameTime = now;
+	    }
+
+	}
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace YummyConsole
 {
-    public class BeepPlayer
+    public static class BeepPlayer
     {
 
         public const string Tetris = "E5-4,B4-8,C5-8,D5-4,C5-8,B4-8,A4-4,A4-8,C5-8,E5-4,"

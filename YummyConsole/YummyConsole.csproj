@@ -41,13 +41,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeepPlayer.cs" />
-    <Compile Include="Colors.cs" />
+    <Compile Include="Enums\Colors.cs" />
+    <Compile Include="Enums\Space.cs" />
     <Compile Include="External\Kernel32.cs" />
     <Compile Include="External\Structs.cs" />
     <Compile Include="Helpers\ArrayHelper.cs" />
     <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="Helpers\RandomHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
+    <Compile Include="Objects\Line.cs" />
     <Compile Include="Yummy.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Objects\AnimatedText.cs" />

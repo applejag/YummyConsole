@@ -9,13 +9,8 @@ namespace YummyConsole
 {
     public class Text : Drawable
     {
-        private string[] _lines;
-        private string _text;
-        public string text {
-            get => _text;
-            set => _lines = StringHelper.SplitString(_text = value, maxWidth);
-        }
-        public int maxWidth;
+	    public string text;
+        public Rect bbox;
         public Color? foregroundColor = Color.GREY;
         public Color? backgroundColor = null;
 
@@ -33,24 +28,24 @@ namespace YummyConsole
 
         protected override void Draw()
         {
-            Yummy.ForegroundColor = foregroundColor;
-            Yummy.BackgroundColor = backgroundColor;
+            //Yummy.ForegroundColor = foregroundColor;
+            //Yummy.BackgroundColor = backgroundColor;
 
-            Vector2 pos = Position;
-            float x = pos.x;
+            //Vector2 pos = Position;
+            //float x = pos.x;
 
-            foreach (string part in _lines)
-            {
-                if (alignment == Alignment.Center)
-                    pos.x = x - part.Length * 0.5f;
-                else if (alignment == Alignment.Right)
-                    pos.x = x - part.Length;
+            //foreach (string part in _lines)
+            //{
+            //    if (alignment == Alignment.Center)
+            //        pos.x = x - part.Length * 0.5f;
+            //    else if (alignment == Alignment.Right)
+            //        pos.x = x - part.Length;
 
-                Yummy.SetCursorPosition((Point)pos);
-                Yummy.Write(part);
+            //    Yummy.SetCursorPosition((Point)pos);
+            //    Yummy.Write(part);
 
-                pos.y += 1;
-            }
+            //    pos.y += 1;
+            //}
         }
 
         protected override void Update()

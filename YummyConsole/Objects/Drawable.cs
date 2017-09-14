@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Management.Instrumentation;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -58,13 +60,15 @@ namespace YummyConsole
             set => LocalPosition = Parent == null ? value : (value - Parent.Position);
         }
 
-        /// <summary>
-        /// Local z-depth of this object.
-        /// </summary>
-        public int localZDepth = 0;
+		/// <summary>
+		/// Local z-depth of this object.
+		/// Objects with lower z-depth overlaps objects with higher z-depth.
+		/// </summary>
+		public int localZDepth = 0;
 
         /// <summary>
-        /// Z-depth relative to this objects parent (if any)
+        /// Z-depth relative to this objects parent (if any).
+        /// Objects with lower z-depth overlaps objects with higher z-depth.
         /// </summary>
         public int ZDepth {
             get => (Parent?.ZDepth + localZDepth) ?? localZDepth;
@@ -211,21 +215,42 @@ namespace YummyConsole
             return Parent.IsChildOf(parent);
         }
 
-        public static void print(string format, params object[] args)
+	    /// <summary>
+	    /// Debug method for printing temporary messages to the screen.
+	    /// Note: Only works while running in Debug configuration!
+	    /// </summary>
+		public static void print(string format, params object[] args)
         {
 #if DEBUG
-            debug.Add(string.Format(format, args));
+            _print(string.Format(format, args));
 #endif
         }
 
+		/// <summary>
+		/// Debug method for printing temporary messages to the screen.
+		/// Note: Only works while running in Debug configuration!
+		/// </summary>
         public static void print(object arg)
         {
 #if DEBUG
-            debug.Add(arg?.ToString() ?? "null");
+            _print(arg);
 #endif
         }
 
-        internal static void FrameCallback()
+	    private static void _print(object arg)
+	    {
+#if DEBUG
+			var frame = new StackFrame(2, true);
+		    string fullpath = frame.GetFileName();
+		    string filename = Path.GetFileNameWithoutExtension(fullpath);
+		    int fileline = frame.GetFileLineNumber();
+			string message = arg?.ToString() ?? "null";
+
+			debug.Add($"<DEBUG> [{filename}:{fileline}] {message}");
+#endif
+		}
+
+		internal static void FrameCallback()
         {
             lock (all)
             {
@@ -253,13 +278,13 @@ namespace YummyConsole
 
 #if DEBUG
                 // Debug text
-                Yummy.BackgroundColor = null;
+                Yummy.BackgroundColor = Color.BLACK;
                 Yummy.ForegroundColor = Color.GREEN;
                 int debugLength = debug.Count;
                 for (int i = 0; i < debugLength; i++)
                 {
                     Yummy.SetCursorPosition(0, Yummy.BufferHeight - debugLength + i);
-                    Yummy.Write("<DEBUG> " + debug[i]);
+                    Yummy.Write(debug[i]);
                 }
                 debug.Clear();
 #endif

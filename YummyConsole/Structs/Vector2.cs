@@ -55,17 +55,28 @@ namespace YummyConsole
         /// Calculates the vector with a magnitude of 1.
         /// </summary>
         public Vector2 Normalized => this / Magnitude;
+		/// <summary>
+		/// Angle of the vector in degrees. Value ranges from -180° to 180°.
+		/// </summary>
+		public float Degrees => (float)Math.Atan2(y, x) * MathHelper.Rad2Deg;
+		/// <summary>
+		/// Angle of the vector in radians. Value ranges from -π to π.
+		/// </summary>
+		public float Radians => (float)Math.Atan2(y, x);
 
-        /// <summary>
-        /// Construct a new vector with given <paramref name="x"/> and <paramref name="y"/> components.
-        /// </summary>
-        public Vector2(float x, float y)
+		/// <summary>
+		/// Construct a new vector with given <paramref name="x"/> and <paramref name="y"/> components.
+		/// </summary>
+		public Vector2(float x, float y)
         {
             this.x = x;
             this.y = y;
         }
 
         #region Public functions
+		/// <summary>
+		/// Used for C# 7 tuples.
+		/// </summary>
         public void Deconstruct(out float x, out float y)
         {
             x = this.x;
@@ -90,21 +101,42 @@ namespace YummyConsole
             this.x = x;
             this.y = y;
         }
-        #endregion
+		#endregion
 
-        #region Static functions
+		#region Static functions
 
-        public static Vector2 LerpUnclamped(Vector2 a, Vector2 b, float t)
+		/// <summary>
+		/// Linearly interpolates between two vectors.
+		/// If <paramref name="t"/> is less than zero or greater than one it will result in a return vector beyond the bounds of <paramref name="a"/> and <paramref name="b"/> in a linear fashion.
+		/// <para>
+		/// <paramref name="t"/>=0 returns <paramref name="a"/>.
+		/// <paramref name="t"/>=1 returns <paramref name="b"/>.
+		/// <paramref name="t"/>=0.5 returns the point midpoint between <paramref name="a"/> and <paramref name="b"/>
+		/// </para>
+		/// </summary>
+		public static Vector2 LerpUnclamped(Vector2 a, Vector2 b, float t)
         {
             return b * t + a * (1 - t);
         }
 
-        public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
+		/// <summary>
+		/// Linearly interpolates between two vectors.
+		/// The parameter <paramref name="t"/> is clamped to the range [0, 1].
+		/// <para>
+		/// <paramref name="t"/>=0 returns <paramref name="a"/>.
+		/// <paramref name="t"/>=1 returns <paramref name="b"/>.
+		/// <paramref name="t"/>=0.5 returns the point midpoint between <paramref name="a"/> and <paramref name="b"/>
+		/// </para>
+		/// </summary>
+		public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
         {
             t = MathHelper.Clamp01(t);
             return b * t + a * (1 - t);
         }
 
+		/// <summary>
+		/// Returns a new vector with its magnitude clamped to <paramref name="maxLength"/>.
+		/// </summary>
         public static Vector2 ClampMagnitude(Vector2 vector, float maxLength)
         {
             if (vector.SqrMagnitude > maxLength * maxLength)
@@ -115,6 +147,9 @@ namespace YummyConsole
             return vector;
         }
 
+		/// <summary>
+		/// Calculates the pythagoran distance between two vectors.
+		/// </summary>
         public static float Distance(Vector2 vector1, Vector2 vector2)
         {
             float dx = vector1.x - vector2.x;
@@ -129,15 +164,36 @@ namespace YummyConsole
         {
             return new Vector2(Math.Max(vector1.x, vector2.x), Math.Max(vector1.y, vector2.y));
         }
+		
+	    /// <summary>
+	    /// Returns a <seealso cref="Vector2"/> that is made from the largest components of number of vectors.
+	    /// </summary>
+		/// <exception cref="ArgumentNullException">Thrown if there's no vectors amoung in the params array</exception>
+	    public static Vector2 Max(params Vector2[] vectors)
+	    {
+		    if ((vectors?.Length ?? 0) < 1) throw new ArgumentNullException(nameof(vectors), "At least one parameter is required");
 
-        /// <summary>
-        /// Returns a <seealso cref="float"/> that is the largest of the two components in the vector.
-        /// </summary>
-        public static float Max(Vector2 vector)
+		    int length = vectors.Length;
+		    Vector2 max = vectors[0];
+
+		    for (int i = 1; i < length; i++)
+		    {
+				Vector2 v = vectors[i];
+				if (v.x > max.x) max.x = v.x;
+			    if (v.y > max.y) max.y = v.y;
+		    }
+
+		    return max;
+	    }
+
+		/// <summary>
+		/// Returns a <seealso cref="float"/> that is the largest of the two components in the vector.
+		/// </summary>
+		public static float Max(Vector2 vector)
         {
             return Math.Max(vector.x, vector.y);
         }
-
+		
         /// <summary>
         /// Returns a <seealso cref="Vector2"/> that is made from the smallest components of two vectors.
         /// </summary>
@@ -146,35 +202,98 @@ namespace YummyConsole
             return new Vector2(Math.Min(vector1.x, vector2.x), Math.Min(vector1.y, vector2.y));
         }
 
-        /// <summary>
-        /// Returns a <seealso cref="float"/> that is the smallest of the two components in the vector.
-        /// </summary>
-        public static float Min(Vector2 vector)
+	    /// <summary>
+	    /// Returns a <seealso cref="Vector2"/> that is made from the smallest components of number of vectors.
+	    /// </summary>
+		/// <exception cref="ArgumentNullException">Thrown if there's no vectors amoung in the params array</exception>
+	    public static Vector2 Min(params Vector2[] vectors)
+	    {
+		    if ((vectors?.Length ?? 0) < 1) throw new ArgumentNullException(nameof(vectors), "At least one parameter is required");
+
+		    int length = vectors.Length;
+		    Vector2 min = vectors[0];
+
+		    for (int i = 1; i < length; i++)
+		    {
+				Vector2 v = vectors[i];
+				if (v.x < min.x) min.x = v.x;
+			    if (v.y < min.y) min.y = v.y;
+		    }
+
+		    return min;
+	    }
+
+		/// <summary>
+		/// Returns a <seealso cref="float"/> that is the smallest of the two components in the vector.
+		/// </summary>
+		public static float Min(Vector2 vector)
         {
             return Math.Min(vector.x, vector.y);
-        }
+		}
 
-        public static Vector2 Scale(Vector2 vector1, Vector2 vector2)
+	    /// <summary>
+	    /// Returns the average position calculated between two vectors.
+	    /// </summary>
+		public static Vector2 Average(Vector2 vector1, Vector2 vector2)
+	    {
+		    return (vector1 + vector2) * 0.5f;
+	    }
+
+		/// <summary>
+		/// Returns the average position calculated between a number of vectors.
+		/// </summary>
+		/// <exception cref="ArgumentNullException">Thrown if there's no vectors amoung in the params array</exception>
+	    public static Vector2 Average(params Vector2[] vectors)
+		{
+		    if ((vectors?.Length ?? 0) < 1) throw new ArgumentNullException(nameof(vectors), "At least one parameter is required");
+
+			int length = vectors.Length;
+			Vector2 sum = vectors[0];
+
+			for (int i = 1; i < length; i++)
+			{
+				sum += vectors[i];
+			}
+
+			return sum / length;
+		}
+
+		/// <summary>
+		/// Returns a new vector where each component has been multiplied together between the two vectors.
+		/// </summary>
+		public static Vector2 Scale(Vector2 vector1, Vector2 vector2)
         {
             return new Vector2(vector1.x * vector2.x, vector1.y * vector2.y);
         }
 
+		/// <summary>
+		/// Creates a new vector from angle in radians with magnitude 1.
+		/// </summary>
         public static Vector2 FromRadians(float rad)
         {
             return new Vector2((float)Math.Cos(rad), -(float)Math.Sin(rad));
         }
 
-        public static Vector2 FromRadians(float rad, float magnitude)
+	    /// <summary>
+	    /// Creates a new vector from angle in radians with custom magnitude.
+	    /// </summary>
+		public static Vector2 FromRadians(float rad, float magnitude)
         {
             return new Vector2((float)Math.Cos(rad), -(float)Math.Sin(rad)) * magnitude;
         }
 
-        public static Vector2 FromDegrees(float deg)
+	    /// <summary>
+	    /// Creates a new vector from angle in degrees with magnitude 1.
+	    /// </summary>
+		public static Vector2 FromDegrees(float deg)
         {
             return FromRadians(deg * MathHelper.Deg2Rad);
         }
 
-        public static Vector2 FromDegrees(float deg, float magnitude)
+	    /// <summary>
+	    /// Creates a new vector from angle in degrees with custom magnitude.
+	    /// </summary>
+		public static Vector2 FromDegrees(float deg, float magnitude)
         {
             return FromRadians(deg * MathHelper.Deg2Rad, magnitude);
         }

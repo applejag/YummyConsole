@@ -31,13 +31,31 @@ namespace YummyConsole.Helpers
             return (float) (-0.5 * (Math.Cos(Math.PI * value) - 1));
         }
 
-        public static float Lerp(float a, float b, float t)
+		/// <summary>
+		/// Linearly interpolates between two float values.
+		/// The parameter <paramref name="t"/> is clamped to the range [0, 1].
+		/// <para>
+		/// <paramref name="t"/>=0 returns <paramref name="a"/>.
+		/// <paramref name="t"/>=1 returns <paramref name="b"/>.
+		/// <paramref name="t"/>=0.5 returns the point midpoint between <paramref name="a"/> and <paramref name="b"/>.
+		/// </para>
+		/// </summary>
+		public static float Lerp(float a, float b, float t)
         {
             t = Clamp01(t);
             return b * t + a * (1 - t);
         }
 
-        public static float LerpUnclamped(float a, float b, float t)
+	    /// <summary>
+	    /// Linearly interpolates between two float values.
+	    /// If <paramref name="t"/> is less than zero or greater than one it will result in a return value outside the range <paramref name="a"/> to <paramref name="b"/>.
+	    /// <para>
+	    /// <paramref name="t"/>=0 returns <paramref name="a"/>.
+	    /// <paramref name="t"/>=1 returns <paramref name="b"/>.
+	    /// <paramref name="t"/>=0.5 returns the point midpoint between <paramref name="a"/> and <paramref name="b"/>.
+	    /// </para>
+	    /// </summary>
+		public static float LerpUnclamped(float a, float b, float t)
         {
             return b * t + a * (1 - t);
         }

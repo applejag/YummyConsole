@@ -14,7 +14,7 @@ namespace Example_TicTacToe
 			
 			new Board();
 
-			Time.RunFrameTimer();
+			Time.RunFrameTimer().Wait();
 
 		}
 	}
