@@ -25,7 +25,7 @@ namespace Example_TicTacToe
 			// Create text header
 			infoText = new Text("Turn: " + turn, this)
 			{
-				alignment = Text.Alignment.Center,
+				alignHorizontal = Text.Horizontal.Center,
 				LocalPosition = new Vector2(gridWidth*0.5f, -2),
 			};
 

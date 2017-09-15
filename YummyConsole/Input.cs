@@ -29,7 +29,8 @@ namespace YummyConsole
             while (Console.KeyAvailable)
             {
                 ConsoleKeyInfo info = Console.ReadKey(true);
-                _inputString += info.KeyChar;
+				if (!char.IsControl(info.KeyChar))
+	                _inputString += info.KeyChar;
                 pressedKeys.Add(info.Key);
                 _anyKeyDown = true;
             }

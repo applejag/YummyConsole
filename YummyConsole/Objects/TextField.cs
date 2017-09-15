@@ -4,8 +4,10 @@ namespace YummyConsole
 {
     public class TextField : Text
     {
-        public event Action<TextField> Submitted;
-        public event Action<TextField> Changed;
+	    public delegate void TextFieldEvent(TextField textField, string text);
+
+        public event TextFieldEvent Submitted;
+        public event TextFieldEvent Changed;
         public bool selected = true;
 
         public TextField(string text, Drawable parent = null) : base(text, parent)
@@ -23,27 +25,29 @@ namespace YummyConsole
             if (!selected) return;
 
             bool changed = false;
+	        string newText = text;
 
             if ((Input.InputString?.Length ?? 0) > 0)
             {
-                text += Input.InputString;
+                newText += Input.InputString;
                 changed = true;
             }
 
-            if (Input.GetKeyDown(ConsoleKey.Backspace) && text.Length > 0)
+            if (Input.GetKeyDown(ConsoleKey.Backspace) && newText.Length > 0)
             {
-                text = text.Substring(0, Math.Max(text.Length - 2, 0));
+	            newText = newText.Substring(0, Math.Max(newText.Length - 2, 0));
                 changed = true;
             }
 
             if (changed)
-                Changed?.Invoke(this);
+                Changed?.Invoke(this, newText);
 
             if (Input.GetKeyDown(ConsoleKey.Enter))
             {
-                Submitted?.Invoke(this);
-                text = string.Empty;
+                Submitted?.Invoke(this, newText);
+                newText = string.Empty;
             }
+	        this.text = newText;
         }
 
         protected override void Draw()

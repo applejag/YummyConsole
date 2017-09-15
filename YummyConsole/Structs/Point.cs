@@ -53,6 +53,11 @@ namespace YummyConsole
             return new Point(point1.x - point2.x, point1.y - point2.y);
         }
 
+	    public static Point operator -(Point point)
+	    {
+		    return new Point(-point.x, -point.y);
+	    }
+
         public static Point operator +(Point point1, Point point2)
         {
             return new Point(point1.x + point2.x, point1.y + point2.y);

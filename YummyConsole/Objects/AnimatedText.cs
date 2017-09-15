@@ -68,7 +68,7 @@ namespace YummyConsole
                     int height = size[1];
 
                     string buffer = reader.ReadToEnd();
-                    string[] rows = buffer.Split(StringHelper.Newlines, StringSplitOptions.None);
+	                string[] rows = buffer.FixNewLines().Split('\n');
 
                     string[] frames = new string[rows.Length / height];
                     for (int i = 0; i < rows.Length; i++)

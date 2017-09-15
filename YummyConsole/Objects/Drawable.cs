@@ -7,6 +7,7 @@ using System.Management.Instrumentation;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using YummyConsole.Helpers;
 
 namespace YummyConsole
 {
@@ -233,7 +234,14 @@ namespace YummyConsole
         public static void print(object arg)
         {
 #if DEBUG
-            _print(arg);
+			if (arg is null)
+				_print("null");
+			if (arg is string[] strings)
+				_print(strings.ToPrettyString());
+			if (arg is char[] chars)
+				_print(chars.ToPrettyString());
+			else
+	            _print(arg);
 #endif
         }
 

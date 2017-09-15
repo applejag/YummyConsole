@@ -81,16 +81,16 @@ namespace YummyConsole.Helpers
         }
 
         /// <summary>
-        /// Wraps a value in a specified interval from <paramref name="min"/> (INCLUSIVE) to <paramref name="max"/> (EXCLUSIVE).
+        /// Wraps a value in a specified interval from <paramref name="min"/> (INCLUSIVE) to <paramref name="max"/> (INCLUSIVE).
         /// </summary>
         /// <param name="value">The value to be wrapped.</param>
         /// <param name="min">The lower bound. (INCLUSIVE)</param>
-        /// <param name="max">The upper bound. (EXCLUSIVE)</param>
+        /// <param name="max">The upper bound. (INCLUSIVE)</param>
         public static int Wrap(int value, int min, int max)
         {
-            int range = max - min;
+            int range = max - min + 1;
             value = (value - min) % range;
-            return value < 0 ? (max + value) : (min + value);
+            return value < 0 ? (max + 1 + value) : (min + value);
         }
 
         /// <summary>
@@ -107,15 +107,15 @@ namespace YummyConsole.Helpers
         }
 
         /// <summary>
-        /// Wraps a value in a specified interval from 0 (INCLUSIVE) to <paramref name="max"/> (EXCLUSIVE).
+        /// Wraps a value in a specified interval from 0 (INCLUSIVE) to <paramref name="max"/> (INCLUSIVE).
         /// </summary>
         /// <param name="value">The value to be wrapped.</param>
-        /// <param name="max">The upper bound. (EXCLUSIVE)</param>
+        /// <param name="max">The upper bound. (INCLUSIVE)</param>
         public static int Wrap(int value, int max)
         {
-            int range = max;
+            int range = max + 1;
             value = value % range;
-            return value < 0 ? (max + value) : value;
+            return value < 0 ? (max + 1 + value) : value;
         }
 
         /// <summary>
@@ -130,5 +130,13 @@ namespace YummyConsole.Helpers
             return value < 0 ? (max + 1 + value) : value;
         }
 
-    }
+	    /// <summary>
+	    /// Compares two numbers to be equal while allowing a custom threshold.
+	    /// </summary>
+	    public static bool Approximately(float a, float b, float threshold)
+	    {
+		    return Math.Abs(a - b) <= Math.Abs(threshold);
+	    }
+
+	}
 }

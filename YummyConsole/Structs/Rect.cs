@@ -59,7 +59,37 @@ namespace YummyConsole
             set => this = new Rect(value, TopRight);
         }
 
-        /// <summary>
+	    public int Top
+	    {
+		    get => y;
+		    set {
+				height += y - value;
+			    y = value;
+		    }
+	    }
+
+	    public int Bottom
+	    {
+		    get => y + height;
+		    set => height = value - y;
+	    }
+
+	    public int Left
+	    {
+		    get => x;
+		    set {
+			    width += x - value;
+			    x = value;
+		    }
+	    }
+
+	    public int Right
+	    {
+		    get => x + width;
+		    set => width = value - x;
+	    }
+
+	    /// <summary>
         /// Creates a rect from position and size
         /// </summary>
         public Rect(int x, int y, int width, int height)
