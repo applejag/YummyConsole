@@ -28,7 +28,6 @@ class Program
 {
 	static void Main(string[] args)
 	{
-		Yummy.SetBufferSize(Console.WindowWidth, Console.WindowHeight);
 
 		new Text("hello world")
 		{
@@ -46,8 +45,7 @@ class Program
 		};
 
 		Time.RunFrameTimer().Wait();
-
-		Console.ReadKey();
+		
 	}
 }
 ```
