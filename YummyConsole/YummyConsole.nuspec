@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>kalle</authors>
+    <owners>$author$</owners>
+    <!-- <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl> -->
+    <projectUrl>https://github.com/jilleJr/YummyConsole</projectUrl>
+    <!-- <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>YummyConsole is a console drawing framework for Windows that holds an objective oriented design for you to use to easily draw on the console.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>console framework drawing draw game engine</tags>
+  </metadata>
+</package>
