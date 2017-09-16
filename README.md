@@ -24,6 +24,8 @@ For a more in-depth instruction of how to install a package, check out the [guid
 ## Example code
 
 ```csharp
+using YummyConsole;
+
 class Program
 {
 	static void Main(string[] args)
