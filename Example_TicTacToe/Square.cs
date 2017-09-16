@@ -8,25 +8,25 @@ namespace Example_TicTacToe
 		public const int WIDTH = 7;
 		public const int HEIGHT = 5;
 		private const string spriteX =
-			"#     #" +
-			" #   # " +
-			"   #   " +
-			" #   # " +
-			"#     #";
+			"#     #\n" +
+			" #   # \n" +
+			"   #   \n" +
+			" #   # \n" +
+			"#     #\n";
 
 		private const string spriteO =
-			"  ###  " +
-			"##   ##" +
-			"#     #" +
-			"##   ##" +
-			"  ###  ";
+			"  ###  \n" +
+			"##   ##\n" +
+			"#     #\n" +
+			"##   ##\n" +
+			"  ###  \n";
 
 		private const string spriteNone =
-			"       " +
-			"       " +
-			"       " +
-			"       " +
-			"       ";
+			"       \n" +
+			"       \n" +
+			"       \n" +
+			"       \n" +
+			"       \n";
 
 		private Player _player;
 		public Player Player
@@ -41,6 +41,7 @@ namespace Example_TicTacToe
 			maxWidth = WIDTH;
 			text = GetSprite(_player);
 			ZDepth = 1;
+			wordWrap = false;
 		}
 
 		protected override void Draw()

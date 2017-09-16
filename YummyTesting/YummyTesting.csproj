@@ -51,6 +51,7 @@
     <Compile Include="Helpers\MathHelperTests.cs" />
     <Compile Include="Helpers\StringHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Structs\RectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

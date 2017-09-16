@@ -107,8 +107,8 @@ namespace YummyConsole
         {
             this.x = Math.Min(point1.x, point2.x);
             this.y = Math.Min(point1.y, point2.y);
-            this.width = Math.Abs(point1.x - point2.x) + 1;
-            this.height = Math.Abs(point1.y - point2.y) + 1;
+            this.width = Math.Abs(point1.x - point2.x);
+            this.height = Math.Abs(point1.y - point2.y);
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace Example_TicTacToe
 		protected const int gridHeight = 3 * (Square.HEIGHT + 1) - 1;
 
 		protected Square[,] grid = new Square[3, 3];
-		public Point selected = Point.One;
+		public Point selected = new Point(1, 1);
 		public Player turn = Player.X;
 		public GameState state = GameState.Playing;
 
@@ -41,6 +41,9 @@ namespace Example_TicTacToe
 
 		protected override void Update()
 		{
+			print(state);
+			print($"grid[{selected.x}, {selected.y}].Player = {grid[selected.x, selected.y].Player}");
+
 			Position = new Vector2(Yummy.BufferWidth - gridWidth, Yummy.BufferHeight - gridHeight) * 0.5f + Vector2.Down;
 
 			if (state != GameState.Playing)

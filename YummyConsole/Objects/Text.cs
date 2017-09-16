@@ -17,6 +17,11 @@ namespace YummyConsole
         public Color? backgroundColor = null;
 
 		/// <summary>
+		/// If true, the writing engine will try to word wrap. This may have unsettling consequenses when drawing ASCII art. Default: true.
+		/// </summary>
+	    public bool wordWrap = true;
+
+		/// <summary>
 		/// If greater than zero, the text tries to wrap around to fit the width. Also used in <see cref="alignHorizontal"/>. Default: 0
 		/// </summary>
 	    public int maxWidth;
@@ -75,7 +80,7 @@ namespace YummyConsole
 			Yummy.ForegroundColor = foregroundColor;
 			Yummy.BackgroundColor = backgroundColor;
 			
-	        string[] allLines = maxWidth <= 0 ? _text.Split('\n') : _text.WordWrap(maxWidth);
+	        string[] allLines = maxWidth <= 0 || !wordWrap ? _text.Split('\n') : _text.WordWrap(maxWidth);
 	        int numLines = allLines.Length;
 
 			Vector2 pos = Position;

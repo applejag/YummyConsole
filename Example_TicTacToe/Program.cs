@@ -12,7 +12,7 @@ namespace Example_TicTacToe
 		static void Main(string[] args)
 		{
 			
-			new Board();
+			var game = new Board();
 
 			Time.RunFrameTimer().Wait();
 
